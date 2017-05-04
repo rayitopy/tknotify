@@ -45,13 +45,22 @@ class Notify(object):
         SW = self.top.winfo_screenwidth()  # screen width
         WW = TITLE_FONT.measure(title)
         if msg and MSG_FONT.measure(msg) > WW:
-            WW = MSG_FONT.measure(msg)
+            msg_list = msg.split("\n")
+            for line in msg_list:
+                if WW < MSG_FONT.measure(line):
+                    WW = MSG_FONT.measure(line)
         WW += text_padding
         qt_lines_title = len(title.split("\n"))
         WH = qt_lines_title * TITLE_FONT.metrics().get("ascent")
         WH += (qt_lines_title - 1) * TITLE_FONT.metrics().get("linespace")
+        if msg:
+            qt_lines_msg = len(msg.split("\n"))
+            WH = qt_lines_msg * MSG_FONT.metrics().get("ascent")
+            WH += (qt_lines_msg- 1) * MSG_FONT.metrics().get("linespace")
+            WH += 10
+
         if WH < 50:
-            WH = 50
+            WH = 60
         self.top.geometry("%dx%d+%d+%d" % (WW, WH, SW - WW - spacing, spacing))
 
     def show(self):
@@ -61,6 +70,11 @@ class Notify(object):
 
     def destroy(self):
         self.top.destroy()
+        self.root.destroy()
 
     def hide(self):
         self.top.withdraw()
+
+    def __del__(self):
+        if self.top.winfo_exists():
+            self.top.destroy()
