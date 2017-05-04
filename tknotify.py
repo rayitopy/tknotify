@@ -10,7 +10,7 @@ class Notify(object):
         Attributes:
             title: the title message (in bold font)
             msg(opt):	the message
-            expire_time(opt): how long the message will be showed (default 5000ms). Set to 0 to display forever.
+            expire_time(opt): how long the message will be showed (default 2000ms). Set to 0 to display forever.
             spacing(opt): the distance to screen border (default 20)
             justify(opt): The title and msg justify (default 'left')
             text_padding(opt): The padding of title or msg (default 50)
@@ -18,12 +18,13 @@ class Notify(object):
         """
         title = kws.get("title")
         msg = kws.get("msg", False)
-        expire_time = kws.get("expire_time", 5000)
+        self.expire_time = kws.get("expire_time", 5000)
         spacing = kws.get("spacing", 20)
         justify = kws.get("justify", CENTER)
         text_padding = kws.get("text_padding", 50)
         alpha = kws.get("alpha", 0.3)
-
+        self.root = Tk()
+        self.root.withdraw()
         self.top = Toplevel()
 
         TITLE_FONT = font.Font(size=9, family="TkDefaultFont", weight=font.BOLD)
@@ -52,11 +53,14 @@ class Notify(object):
         if WH < 50:
             WH = 50
         self.top.geometry("%dx%d+%d+%d" % (WW, WH, SW - WW - spacing, spacing))
-	if expire_time:
-	    self.top.after(expire_time, top.destroy)
-	    
+
     def show(self):
+        if self.expire_time:
+            self.top.after(self.expire_time, self.top.destroy)
         self.top.deiconify()
 
     def destroy(self):
         self.top.destroy()
+
+    def hide(self):
+        self.top.withdraw()
